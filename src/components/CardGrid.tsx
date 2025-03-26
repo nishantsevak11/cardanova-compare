@@ -99,6 +99,7 @@ const CardGrid = ({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      key={`card-grid-${items.length}`} // Re-trigger animation when items change
     >
       {items.map((item) => (
         <motion.div 
@@ -109,6 +110,7 @@ const CardGrid = ({
           style={{ 
             transition: "transform 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67)",
           }}
+          layout // Add layout animation for smooth transitions when items are filtered
         >
           <Card
             {...item}

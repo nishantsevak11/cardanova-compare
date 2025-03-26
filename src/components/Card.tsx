@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { PlusCircle, CheckCircle, X } from "lucide-react";
+import { PlusCircle, CheckCircle, X, CreditCard, Tag, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface CardProps {
@@ -10,6 +10,8 @@ export interface CardProps {
   image: string;
   price: string;
   rating: number;
+  cardType?: 'credit' | 'debit';
+  offers?: string[];
   features: string[];
   isSelected: boolean;
   onSelect: (id: string) => void;
@@ -24,6 +26,8 @@ const Card = ({
   image,
   price,
   rating,
+  cardType = 'credit',
+  offers = [],
   features,
   isSelected,
   onSelect,
@@ -56,6 +60,8 @@ const Card = ({
       }
     })
   };
+
+  const hasOffers = offers.length > 0;
 
   return (
     <motion.div 
@@ -114,6 +120,20 @@ const Card = ({
         >
           {price}
         </motion.div>
+        
+        {/* Card type badge */}
+        <motion.div 
+          className={cn(
+            "absolute top-3 right-3 px-3 py-1 rounded-full backdrop-blur-sm text-xs font-medium flex items-center",
+            cardType === 'credit' ? "bg-brand-blue/70 text-white" : "bg-brand-teal/70 text-white"
+          )}
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
+          <CreditCard size={12} className="mr-1" />
+          {cardType === 'credit' ? 'Credit' : 'Debit'}
+        </motion.div>
       </div>
 
       <div className={cn(
@@ -146,6 +166,34 @@ const Card = ({
           </motion.div>
         </div>
 
+        {/* Special Offers Section */}
+        {hasOffers && !isInComparisonView && (
+          <motion.div 
+            className="mb-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="flex items-center mb-1">
+              <Tag size={14} className="text-brand-teal mr-1" />
+              <span className="text-xs font-semibold text-brand-teal">SPECIAL OFFERS</span>
+            </div>
+            <ul className="text-xs text-gray-600">
+              {offers.slice(0, 1).map((offer, idx) => (
+                <li key={idx} className="flex items-center">
+                  <Star size={12} className="text-yellow-500 mr-1 flex-shrink-0" />
+                  <span className="line-clamp-1">{offer}</span>
+                </li>
+              ))}
+              {offers.length > 1 && (
+                <li className="text-brand-blue text-xs mt-1 hover:underline cursor-pointer">
+                  +{offers.length - 1} more offers
+                </li>
+              )}
+            </ul>
+          </motion.div>
+        )}
+
         {isInComparisonView ? (
           <motion.ul 
             className="space-y-2 mt-4 text-sm"
@@ -160,6 +208,29 @@ const Card = ({
               }
             }}
           >
+            {/* Display offers in comparison view */}
+            {hasOffers && (
+              <motion.div className="mb-4 p-2 bg-gradient-to-r from-brand-teal/10 to-brand-blue/10 rounded-lg">
+                <div className="font-medium text-sm mb-1 flex items-center">
+                  <Tag size={14} className="text-brand-teal mr-1" />
+                  <span>Special Offers</span>
+                </div>
+                <ul className="space-y-1">
+                  {offers.map((offer, idx) => (
+                    <motion.li 
+                      key={idx} 
+                      custom={idx}
+                      variants={featureVariants}
+                      className="text-xs flex items-start"
+                    >
+                      <Star size={10} className="text-yellow-500 mr-1 mt-1 flex-shrink-0" />
+                      <span>{offer}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+            
             {features.map((feature, index) => (
               <motion.li 
                 key={index} 

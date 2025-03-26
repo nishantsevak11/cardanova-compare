@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
 import Card, { CardProps } from './Card';
-import { X, Plus, ChevronLeft, ChevronRight, Maximize2, Sparkles } from "lucide-react";
+import { X, Plus, ChevronLeft, ChevronRight, Maximize2, Sparkles, CreditCard, Tag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
@@ -28,6 +28,10 @@ const ComparisonView = ({
   // Get all feature categories from all cards
   const allFeatures = items.flatMap(item => item.features);
   const uniqueFeatures = [...new Set(allFeatures)];
+
+  // Get all offer categories from all cards
+  const allOffers = items.flatMap(item => item.offers || []);
+  const uniqueOffers = [...new Set(allOffers)];
 
   // Find the best price (lowest)
   const prices = items.map(item => parseFloat(item.price.replace(/[^0-9.]/g, '')));
@@ -245,6 +249,31 @@ const ComparisonView = ({
                 </tr>
               </thead>
               <tbody>
+                {/* Card Type row */}
+                <motion.tr 
+                  className="border-b border-white/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <td className="py-3 px-4 text-left font-medium text-gray-400 flex items-center">
+                    <CreditCard size={16} className="mr-2 text-gray-500" />
+                    Card Type
+                  </td>
+                  {items.map((item) => (
+                    <td key={item.id} className="py-3 px-4">
+                      <span className={cn(
+                        "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+                        item.cardType === 'credit' 
+                          ? "bg-brand-blue/20 text-brand-blue" 
+                          : "bg-brand-teal/20 text-brand-teal"
+                      )}>
+                        {item.cardType === 'credit' ? 'Credit Card' : 'Debit Card'}
+                      </span>
+                    </td>
+                  ))}
+                </motion.tr>
+                
                 {/* Price row */}
                 <motion.tr 
                   className="border-b border-white/10"
@@ -311,19 +340,37 @@ const ComparisonView = ({
                   ))}
                 </motion.tr>
                 
-                {/* Features rows */}
-                {uniqueFeatures.map((feature, idx) => (
+                {/* Special Offers Header */}
+                {uniqueOffers.length > 0 && (
                   <motion.tr 
-                    key={idx} 
-                    className="border-b border-white/10"
+                    className="border-b border-white/10 bg-gradient-to-r from-brand-teal/5 to-transparent"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.75 }}
+                  >
+                    <td 
+                      colSpan={items.length + 1} 
+                      className="py-3 px-4 text-left font-semibold text-white flex items-center"
+                    >
+                      <Tag size={16} className="mr-2 text-brand-teal" />
+                      Special Offers
+                    </td>
+                  </motion.tr>
+                )}
+                
+                {/* Offers rows */}
+                {uniqueOffers.map((offer, idx) => (
+                  <motion.tr 
+                    key={`offer-${idx}`} 
+                    className="border-b border-white/10 bg-gradient-to-r from-brand-teal/5 to-transparent"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 + (idx * 0.05) }}
                   >
-                    <td className="py-3 px-4 text-left font-medium text-gray-400">{feature}</td>
+                    <td className="py-3 px-4 text-left font-medium text-gray-400 pl-8">{offer}</td>
                     {items.map(item => (
                       <td key={item.id} className="py-3 px-4 text-white">
-                        {item.features.includes(feature) ? (
+                        {(item.offers || []).includes(offer) ? (
                           <motion.span 
                             className="text-brand-teal inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-teal/10"
                             initial={{ scale: 0 }}
@@ -338,6 +385,57 @@ const ComparisonView = ({
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: 0.9 + (idx * 0.03) }}
+                          >
+                            —
+                          </motion.span>
+                        )}
+                      </td>
+                    ))}
+                  </motion.tr>
+                ))}
+                
+                {/* Features Header */}
+                <motion.tr 
+                  className="border-b border-white/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <td 
+                    colSpan={items.length + 1} 
+                    className="py-3 px-4 text-left font-semibold text-white"
+                  >
+                    Features
+                  </td>
+                </motion.tr>
+                
+                {/* Features rows */}
+                {uniqueFeatures.map((feature, idx) => (
+                  <motion.tr 
+                    key={idx} 
+                    className="border-b border-white/10"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.0 + (idx * 0.05) }}
+                  >
+                    <td className="py-3 px-4 text-left font-medium text-gray-400 pl-8">{feature}</td>
+                    {items.map(item => (
+                      <td key={item.id} className="py-3 px-4 text-white">
+                        {item.features.includes(feature) ? (
+                          <motion.span 
+                            className="text-brand-teal inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-teal/10"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 1.1 + (idx * 0.03), type: "spring" }}
+                          >
+                            ✓
+                          </motion.span>
+                        ) : (
+                          <motion.span 
+                            className="text-gray-600 inline-flex items-center justify-center w-6 h-6"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 1.1 + (idx * 0.03) }}
                           >
                             —
                           </motion.span>
