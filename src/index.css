@@ -114,6 +114,61 @@
     @apply bg-white/70 dark:bg-black/70 backdrop-blur-lg border border-white/20 dark:border-black/20;
   }
 
+  .neo-blur {
+    @apply backdrop-blur-xl bg-black/40 border border-white/10;
+  }
+
+  .neo-button {
+    @apply bg-gradient-to-r from-brand-blue to-brand-teal shadow-[0_4px_12px_rgba(0,116,232,0.4)] hover:shadow-[0_6px_16px_rgba(0,116,232,0.6)];
+  }
+
+  .glass-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+    transform: rotate(45deg);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .glassmorphism {
+    @apply relative overflow-hidden bg-white/80 dark:bg-white/10 backdrop-blur-md;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .glassmorphism::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: inherit;
+    backdrop-filter: blur(10px);
+    z-index: -1;
+  }
+
+  .perspective {
+    perspective: 1000px;
+  }
+
   .stagger-animation > * {
     opacity: 0;
     transform: translateY(10px);
@@ -154,5 +209,58 @@
 
   .transition-opacity-300 {
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@layer utilities {
+  .animate-particle {
+    animation: particle-orbit 4s linear infinite;
+  }
+
+  .animate-pulse-orbit {
+    animation: pulse-orbit 3s ease-in-out infinite;
+  }
+}
+
+@keyframes stagger-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes particle-orbit {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100px * cos(360deg))) translateY(calc(100px * sin(360deg)));
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-orbit {
+  0% {
+    transform: rotate(0deg) translateX(14px) scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: rotate(180deg) translateX(14px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg) translateX(14px) scale(0.8);
+    opacity: 0.3;
   }
 }
