@@ -4,13 +4,16 @@ import CardGrid from '@/components/CardGrid';
 import ComparisonBar from '@/components/ComparisonBar';
 import ComparisonView from '@/components/ComparisonView';
 import { useToast } from "@/hooks/use-toast";
-import { Search, CreditCard, Filter } from "lucide-react";
+import { Search, CreditCard, Filter, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion } from "framer-motion";
 
-// Enhanced sample data for our cards
+// Define the card type as a union type to match CardItem expectations
+type CardType = "credit" | "debit";
+
+// Enhanced sample data for our cards with product offers
 const CARD_DATA = [
   {
     id: '1',
@@ -18,7 +21,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1584277261846-c6a1672ed979?q=80&w=2070&auto=format&fit=crop',
     price: '$499',
     rating: 4.8,
-    cardType: 'credit',
+    cardType: 'credit' as CardType,
     offers: ['5% Cashback on Travel', 'Free Airport Lounge Access', 'Premium Insurance Coverage'],
     features: [
       'Metal Construction',
@@ -27,6 +30,11 @@ const CARD_DATA = [
       'Airport Lounge Access',
       'Concierge Service 24/7',
       'Advanced Fraud Protection'
+    ],
+    productOffers: [
+      { product: 'iPhone', cashback: '3%', installments: '12 months 0% interest', exclusive: true },
+      { product: 'MacBook', cashback: '5%', installments: '18 months 0% interest', exclusive: true },
+      { product: 'Samsung TV', cashback: '2%', installments: '6 months 0% interest', exclusive: false }
     ]
   },
   {
@@ -35,7 +43,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1559320955-9fbd7f62a775?q=80&w=2069&auto=format&fit=crop',
     price: '$199',
     rating: 4.5,
-    cardType: 'credit',
+    cardType: 'credit' as CardType,
     offers: ['2% Cashback on all Purchases', 'No Annual Fee First Year'],
     features: [
       'Plastic Construction',
@@ -44,6 +52,11 @@ const CARD_DATA = [
       'No Annual Fee First Year',
       'Mobile Wallet Compatible',
       'Purchase Protection'
+    ],
+    productOffers: [
+      { product: 'iPhone', cashback: '2%', installments: '6 months 0% interest', exclusive: false },
+      { product: 'Samsung Galaxy', cashback: '4%', installments: '12 months 0% interest', exclusive: true },
+      { product: 'iPad', cashback: '1%', installments: '3 months 0% interest', exclusive: false }
     ]
   },
   {
@@ -52,7 +65,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?q=80&w=2070&auto=format&fit=crop',
     price: '$399',
     rating: 4.6,
-    cardType: 'credit',
+    cardType: 'credit' as CardType,
     offers: ['Business Expense Management', '3% back on Office Supplies'],
     features: [
       'Metal Construction',
@@ -61,6 +74,11 @@ const CARD_DATA = [
       'Priority Boarding',
       'Executive Lounge Access',
       'Expense Report Integration'
+    ],
+    productOffers: [
+      { product: 'iPhone', cashback: '4%', installments: '24 months 0% interest', exclusive: true },
+      { product: 'Office Supplies', cashback: '5%', installments: 'N/A', exclusive: false },
+      { product: 'Business Software', cashback: '10%', installments: '12 months 0% interest', exclusive: true }
     ]
   },
   {
@@ -69,7 +87,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop',
     price: '$0',
     rating: 4.0,
-    cardType: 'debit',
+    cardType: 'debit' as CardType,
     offers: ['No Annual Fee', 'Student Discounts'],
     features: [
       'Plastic Construction',
@@ -78,6 +96,11 @@ const CARD_DATA = [
       'Late Fee Forgiveness',
       'Credit Building Reports',
       'Student Discounts'
+    ],
+    productOffers: [
+      { product: 'Laptops', cashback: '5%', installments: '6 months 0% interest', exclusive: true },
+      { product: 'Textbooks', cashback: '10%', installments: 'N/A', exclusive: false },
+      { product: 'iPad', cashback: '3%', installments: '3 months 0% interest', exclusive: false }
     ]
   },
   {
@@ -86,7 +109,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?q=80&w=2070&auto=format&fit=crop',
     price: '$299',
     rating: 4.7,
-    cardType: 'credit',
+    cardType: 'credit' as CardType,
     offers: ['Miles for Every Purchase', 'Free Global Entry'],
     features: [
       'Metal-Plastic Hybrid',
@@ -95,6 +118,11 @@ const CARD_DATA = [
       'Hotel Upgrades',
       'Global Entry Credit',
       'Trip Cancellation Insurance'
+    ],
+    productOffers: [
+      { product: 'Travel Gear', cashback: '8%', installments: 'N/A', exclusive: true },
+      { product: 'iPhone', cashback: '1%', installments: '12 months 0% interest', exclusive: false },
+      { product: 'Luggage', cashback: '5%', installments: 'N/A', exclusive: false }
     ]
   },
   {
@@ -103,7 +131,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?q=80&w=2071&auto=format&fit=crop',
     price: '$89',
     rating: 4.3,
-    cardType: 'credit',
+    cardType: 'credit' as CardType,
     offers: ['3% on Dining and Entertainment', 'Introductory 0% APR'],
     features: [
       'Plastic Construction',
@@ -112,6 +140,11 @@ const CARD_DATA = [
       'Introductory 0% APR',
       'Fraud Alerts',
       'Monthly Credit Score Updates'
+    ],
+    productOffers: [
+      { product: 'Dining', cashback: '5%', installments: 'N/A', exclusive: false },
+      { product: 'Entertainment', cashback: '3%', installments: 'N/A', exclusive: false },
+      { product: 'iPhone', cashback: '1%', installments: '9 months 0% interest', exclusive: false }
     ]
   },
   {
@@ -120,7 +153,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1559589689-577aabd1db4f?q=80&w=2070&auto=format&fit=crop',
     price: '$49',
     rating: 3.9,
-    cardType: 'debit',
+    cardType: 'debit' as CardType,
     offers: ['No Credit History Required', 'Credit Building Focus'],
     features: [
       'Plastic Construction',
@@ -129,6 +162,11 @@ const CARD_DATA = [
       'Low Deposit Requirement',
       'Automatic Credit Line Reviews',
       'Financial Education Resources'
+    ],
+    productOffers: [
+      { product: 'Household Essentials', cashback: '2%', installments: '3 months 0% interest', exclusive: false },
+      { product: 'Groceries', cashback: '1.5%', installments: 'N/A', exclusive: false },
+      { product: 'Smartphones', cashback: '1%', installments: '6 months 0% interest', exclusive: false }
     ]
   },
   {
@@ -137,7 +175,7 @@ const CARD_DATA = [
     image: 'https://images.unsplash.com/photo-1580828343064-fde4fc206bc6?q=80&w=2071&auto=format&fit=crop',
     price: '$599',
     rating: 4.9,
-    cardType: 'credit',
+    cardType: 'credit' as CardType,
     offers: ['Exclusive Event Access', 'Personal Travel Consultant'],
     features: [
       'Metal Construction',
@@ -146,6 +184,11 @@ const CARD_DATA = [
       'Global Airport Lounge Access',
       'Personal Travel Consultant',
       'Exclusive Event Access'
+    ],
+    productOffers: [
+      { product: 'Luxury Goods', cashback: '10%', installments: '24 months 0% interest', exclusive: true },
+      { product: 'iPhone', cashback: '5%', installments: '18 months 0% interest', exclusive: true },
+      { product: 'Designer Fashion', cashback: '8%', installments: '12 months 0% interest', exclusive: true }
     ]
   }
 ];
@@ -157,7 +200,7 @@ const Index = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isComparing, setIsComparing] = useState(false);
   
-  // New search and filter states
+  // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [cardTypeFilter, setCardTypeFilter] = useState<{credit: boolean, debit: boolean}>({
@@ -165,12 +208,24 @@ const Index = () => {
     debit: true
   });
   const [showOffersOnly, setShowOffersOnly] = useState(false);
+  const [isProductSearch, setIsProductSearch] = useState(false);
   
   // Filtered cards based on search and filters
   const filteredCards = CARD_DATA.filter(card => {
-    // Search term filter
-    const matchesSearch = card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         card.features.some(feature => feature.toLowerCase().includes(searchTerm.toLowerCase()));
+    // Product search - check if any product in productOffers matches the search term
+    const matchesProductSearch = isProductSearch && 
+      card.productOffers.some(offer => 
+        offer.product.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    
+    // Regular search in card title and features
+    const matchesCardSearch = !isProductSearch && (
+      card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      card.features.some(feature => feature.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    
+    // If product search is active, only use that filter
+    const matchesSearch = isProductSearch ? matchesProductSearch : (matchesCardSearch || matchesProductSearch);
     
     // Card type filter
     const matchesCardType = 
@@ -209,6 +264,15 @@ const Index = () => {
           description: "Select more cards to compare them side by side."
         });
       }
+    }
+  };
+  
+  // Toggle between product search and regular card search
+  const handleSearchTypeToggle = (isProduct: boolean) => {
+    setIsProductSearch(isProduct);
+    if (searchTerm) {
+      // Re-run search with new type
+      setSearchTerm(searchTerm);
     }
   };
   
@@ -258,6 +322,69 @@ const Index = () => {
     };
   }, []);
 
+  // Display product offers for a specific product if searched
+  const getProductSearchResults = () => {
+    if (!searchTerm || !isProductSearch) return null;
+    
+    const matchingCards = CARD_DATA.filter(card => 
+      card.productOffers.some(offer => 
+        offer.product.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    
+    if (matchingCards.length === 0) return null;
+    
+    return (
+      <div className="mb-8 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <ShoppingBag size={18} className="text-brand-blue" />
+          Product Offers for "{searchTerm}"
+        </h3>
+        <div className="space-y-4">
+          {matchingCards.map(card => {
+            const matchingOffers = card.productOffers.filter(offer => 
+              offer.product.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            return (
+              <div key={card.id} className="flex flex-col sm:flex-row gap-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-16 h-16 rounded overflow-hidden shrink-0">
+                  <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-900">{card.title}</h4>
+                  <p className="text-sm text-gray-500 mb-2">{card.cardType === 'credit' ? 'Credit Card' : 'Debit Card'}</p>
+                  <div className="space-y-1">
+                    {matchingOffers.map((offer, idx) => (
+                      <div key={idx} className="text-sm">
+                        <span className="font-medium text-brand-blue">{offer.product}: </span>
+                        {offer.cashback && <span className="mr-2">{offer.cashback} cashback</span>}
+                        {offer.installments !== 'N/A' && <span className="mr-2">{offer.installments}</span>}
+                        {offer.exclusive && <span className="text-xs bg-brand-light-blue text-brand-blue px-1 py-0.5 rounded">Exclusive</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <button 
+                    onClick={() => handleToggleSelect(card.id)}
+                    className={`px-3 py-1 rounded text-sm transition-colors ${
+                      selectedIds.includes(card.id) 
+                        ? 'bg-brand-blue text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {selectedIds.includes(card.id) ? 'Selected' : 'Select'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <header className="bg-white sticky top-0 z-10 shadow-sm border-b">
@@ -279,7 +406,7 @@ const Index = () => {
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Search for cards, features, or benefits..."
+                placeholder={isProductSearch ? "Search for products (e.g., iPhone, MacBook)..." : "Search for cards, features, or benefits..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-10 py-2 w-full rounded-lg border border-gray-200 focus:border-brand-blue transition-all"
@@ -291,6 +418,30 @@ const Index = () => {
               >
                 <Filter size={18} />
               </button>
+            </div>
+            
+            <div className="flex items-center justify-between mt-2 text-sm">
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => handleSearchTypeToggle(false)}
+                  className={`px-3 py-1 rounded-full transition-colors ${
+                    !isProductSearch ? 'bg-brand-blue text-white' : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  Search Cards
+                </button>
+                <button
+                  onClick={() => handleSearchTypeToggle(true)}
+                  className={`px-3 py-1 rounded-full transition-colors ${
+                    isProductSearch ? 'bg-brand-blue text-white' : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  Search Products
+                </button>
+              </div>
+              <div className="text-xs text-gray-500">
+                Showing {filteredCards.length} of {CARD_DATA.length} cards
+              </div>
             </div>
             
             <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
@@ -349,6 +500,7 @@ const Index = () => {
                         setSearchTerm('');
                         setCardTypeFilter({credit: true, debit: true});
                         setShowOffersOnly(false);
+                        setIsProductSearch(false);
                       }}
                       className="text-xs text-brand-blue hover:underline"
                     >
@@ -367,6 +519,9 @@ const Index = () => {
           <h2 className="text-3xl font-bold tracking-tight mb-3">Find Your Perfect Card</h2>
           <p className="text-gray-600">Select multiple cards to compare features side by side.</p>
         </div>
+        
+        {/* Product search results */}
+        {getProductSearchResults()}
         
         {filteredCards.length > 0 ? (
           <CardGrid

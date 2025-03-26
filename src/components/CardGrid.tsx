@@ -4,7 +4,17 @@ import { cn } from "@/lib/utils";
 import Card, { CardProps } from './Card';
 import { motion } from 'framer-motion';
 
-type CardItem = Omit<CardProps, 'onSelect' | 'isSelected' | 'onRemove' | 'isInComparisonView'>;
+export type CardType = "credit" | "debit";
+
+export type CardItem = Omit<CardProps, 'onSelect' | 'isSelected' | 'onRemove' | 'isInComparisonView'> & {
+  cardType: CardType;
+  productOffers?: Array<{
+    product: string;
+    cashback: string;
+    installments: string;
+    exclusive: boolean;
+  }>;
+};
 
 interface CardGridProps {
   items: CardItem[];
