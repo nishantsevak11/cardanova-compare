@@ -75,6 +75,10 @@
     @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-image: 
+      radial-gradient(circle at 25px 25px, rgba(0, 112, 243, 0.03) 2%, transparent 0%),
+      radial-gradient(circle at 75px 75px, rgba(54, 178, 189, 0.03) 2%, transparent 0%);
+    background-size: 100px 100px;
   }
 
   /* Custom scrollbar */
@@ -98,20 +102,33 @@
 
 @layer components {
   .card-shadow {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 10px 20px -5px rgba(0, 0, 0, 0.08),
+      0 20px 40px -10px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
   }
 
   .card-shadow:hover {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 15px 25px -5px rgba(0, 0, 0, 0.1),
+      0 30px 50px -10px rgba(0, 0, 0, 0.06);
   }
 
   .card-selected {
-    box-shadow: 0 0 0 2px hsl(var(--accent)), 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
+    box-shadow: 
+      0 0 0 2px hsl(var(--accent)),
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 10px 20px -5px rgba(0, 0, 0, 0.08),
+      0 20px 40px -10px rgba(0, 0, 0, 0.04);
   }
 
   .glass-morphism {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-lg border border-white/20 dark:border-black/20;
+    @apply bg-white/80 dark:bg-black/70 backdrop-blur-xl border border-white/20 dark:border-white/10;
+    box-shadow: 
+      0 4px 30px rgba(0, 0, 0, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
   .neo-blur {
@@ -119,7 +136,7 @@
   }
 
   .neo-button {
-    @apply bg-gradient-to-r from-brand-blue to-brand-teal shadow-[0_4px_12px_rgba(0,116,232,0.4)] hover:shadow-[0_6px_16px_rgba(0,116,232,0.6)];
+    @apply bg-gradient-to-r from-brand-blue to-brand-teal text-white shadow-[0_4px_12px_rgba(0,116,232,0.4)] hover:shadow-[0_6px_16px_rgba(0,116,232,0.6)] transition-all;
   }
 
   .glass-container {
@@ -136,11 +153,11 @@
     height: 200%;
     background: linear-gradient(
       to bottom right,
-      rgba(255, 255, 255, 0.3) 0%,
-      rgba(255, 255, 255, 0.1) 40%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.2) 40%,
       rgba(255, 255, 255, 0) 50%,
-      rgba(255, 255, 255, 0.1) 60%,
-      rgba(255, 255, 255, 0.3) 100%
+      rgba(255, 255, 255, 0.2) 60%,
+      rgba(255, 255, 255, 0.4) 100%
     );
     transform: rotate(45deg);
     pointer-events: none;
@@ -148,8 +165,11 @@
   }
 
   .glassmorphism {
-    @apply relative overflow-hidden bg-white/80 dark:bg-white/10 backdrop-blur-md;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    @apply relative overflow-hidden bg-white/90 dark:bg-white/10 backdrop-blur-xl;
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.12),
+      0 4px 10px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
@@ -161,7 +181,7 @@
     right: -10px;
     bottom: -10px;
     background: inherit;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
     z-index: -1;
   }
 
@@ -175,27 +195,27 @@
   }
 
   .stagger-animation > *:nth-child(1) {
-    animation: stagger-fade-in 0.3s ease-out forwards;
+    animation: stagger-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .stagger-animation > *:nth-child(2) {
-    animation: stagger-fade-in 0.3s ease-out 0.05s forwards;
+    animation: stagger-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
   }
 
   .stagger-animation > *:nth-child(3) {
-    animation: stagger-fade-in 0.3s ease-out 0.1s forwards;
+    animation: stagger-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
   }
 
   .stagger-animation > *:nth-child(4) {
-    animation: stagger-fade-in 0.3s ease-out 0.15s forwards;
+    animation: stagger-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
   }
 
   .stagger-animation > *:nth-child(5) {
-    animation: stagger-fade-in 0.3s ease-out 0.2s forwards;
+    animation: stagger-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
   }
 
   .stagger-animation > *:nth-child(6) {
-    animation: stagger-fade-in 0.3s ease-out 0.25s forwards;
+    animation: stagger-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
   }
 
   /* Transition utility classes */
@@ -210,15 +230,55 @@
   .transition-opacity-300 {
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
+  
+  /* Enhanced UI elements */
+  .hero-gradient {
+    background: linear-gradient(135deg, 
+      hsla(210, 100%, 50%, 0.05) 0%, 
+      hsla(174, 80%, 48%, 0.05) 100%
+    );
+  }
+  
+  .fancy-border {
+    position: relative;
+    border-radius: var(--radius);
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 112, 243, 0.5),
+      rgba(54, 178, 189, 0.5)
+    );
+  }
+  
+  .fancy-border::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: calc(var(--radius) - 1px);
+    background: white;
+    z-index: -1;
+  }
 }
 
 @layer utilities {
   .animate-particle {
-    animation: particle-orbit 4s linear infinite;
+    animation: particle-orbit 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   }
 
   .animate-pulse-orbit {
     animation: pulse-orbit 3s ease-in-out infinite;
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px rgba(54, 178, 189, 0.5), 0 0 20px rgba(0, 112, 243, 0.3);
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
   }
 }
 
@@ -235,17 +295,19 @@
 
 @keyframes particle-orbit {
   0% {
-    transform: translateX(0) translateY(0);
+    transform: translateX(0) translateY(0) scale(0.5);
     opacity: 0;
   }
   20% {
     opacity: 1;
+    transform: scale(1);
   }
   80% {
     opacity: 1;
+    transform: scale(0.8);
   }
   100% {
-    transform: translateX(calc(100px * cos(360deg))) translateY(calc(100px * sin(360deg)));
+    transform: translateX(calc(120px * cos(360deg))) translateY(calc(120px * sin(360deg))) scale(0.3);
     opacity: 0;
   }
 }
@@ -262,5 +324,17 @@
   100% {
     transform: rotate(360deg) translateX(14px) scale(0.8);
     opacity: 0.3;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
   }
 }

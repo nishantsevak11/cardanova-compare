@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,189 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Enhanced UI Effects */
+.glassmorphism-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.neo-morphism {
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f0f0f0, #ffffff);
+  box-shadow: 
+    10px 10px 20px #d1d1d1,
+    -10px -10px 20px #ffffff;
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 16px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  z-index: -1;
+  border-radius: 18px;
+  background: linear-gradient(
+    45deg,
+    #0070F3,
+    #36B2BD,
+    #0070F3
+  );
+  background-size: 400% 400%;
+  animation: gradient-border 8s ease infinite;
+}
+
+@keyframes gradient-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #0070F3, #36B2BD);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.floating {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.card-glow {
+  position: relative;
+}
+
+.card-glow::after {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  z-index: -1;
+  background: radial-gradient(
+    circle at center,
+    rgba(54, 178, 189, 0.15),
+    rgba(0, 112, 243, 0.05) 60%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.card-glow:hover::after {
+  opacity: 1;
+}
+
+/* Enhanced Animations */
+@keyframes slide-up-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up-animation {
+  animation: slide-up-fade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Enhance card particle animations */
+@keyframes particle-orbit {
+  0% {
+    transform: translateX(0) translateY(0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(0.8);
+  }
+  100% {
+    transform: translateX(calc(120px * cos(360deg))) translateY(calc(120px * sin(360deg))) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.animate-particle {
+  animation: particle-orbit 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Background pattern */
+.bg-pattern {
+  background-image: 
+    radial-gradient(circle at 25px 25px, rgba(0, 112, 243, 0.05) 2%, transparent 0%),
+    radial-gradient(circle at 75px 75px, rgba(54, 178, 189, 0.05) 2%, transparent 0%);
+  background-size: 100px 100px;
+}
+
+/* Custom button styles */
+.premium-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.premium-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #0070F3, #36B2BD);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.premium-button:hover::before {
+  opacity: 1;
+}
+
+.premium-button:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
 }
