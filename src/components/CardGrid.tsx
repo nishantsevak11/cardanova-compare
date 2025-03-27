@@ -3,9 +3,10 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import Card, { CardProps } from './Card';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, Sparkles, Award, Gift, Star } from 'lucide-react';
+import { Eye, Sparkles, Award, Gift, Star, CreditCard, Tag } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export type CardType = "credit" | "debit";
 
@@ -34,27 +35,29 @@ const CardGrid = ({
   onViewItem,
   className
 }: CardGridProps) => {
+  const isMobile = useIsMobile();
+  
   // Enhanced card animation variants for Framer Motion
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08 // Slightly faster staggering for smoother appearance
+        staggerChildren: 0.06 // Slightly faster staggering for smoother appearance
       }
     }
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.97 }, // Less extreme initial values
+    hidden: { opacity: 0, y: 15, scale: 0.98 }, 
     visible: { 
       opacity: 1, 
       y: 0, 
       scale: 1,
       transition: { 
         type: "spring", 
-        stiffness: 70, // Lower stiffness for more subtle animation
-        damping: 15   // Higher damping for less bounce
+        stiffness: 50, 
+        damping: 12
       }
     }
   };
@@ -80,7 +83,8 @@ const CardGrid = ({
   return (
     <motion.div 
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6", // Reduced gap for more consistent spacing
+        "grid gap-4 sm:gap-5",
+        "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
         className
       )}
       variants={containerVariants}
@@ -100,10 +104,36 @@ const CardGrid = ({
               className="card-container relative"
               variants={cardVariants}
               layout
-              whileHover={{ scale: 1.01, zIndex: 5 }} // Subtler hover effect
+              whileHover={{ 
+                scale: isMobile ? 1 : 1.01,
+                zIndex: 5 
+              }}
             >
-              {/* Card badges - positioned consistently */}
-              <div className="absolute -top-2 left-0 right-0 flex justify-between px-3 z-10">
+              {/* Price and type badges - consistent positioning */}
+              <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+                <Badge className="bg-slate-900/90 text-white shadow-md flex items-center gap-1 px-3 py-2 rounded-md text-sm font-bold">
+                  ${item.annualFee}
+                </Badge>
+                
+                <Badge 
+                  className={cn(
+                    "shadow-md flex items-center gap-1 px-3 py-2 rounded-md text-sm font-bold",
+                    item.cardType === "credit" 
+                      ? "bg-blue-600 text-white" 
+                      : "bg-green-600 text-white"
+                  )}
+                >
+                  {item.cardType === "credit" ? (
+                    <CreditCard size={14} className="flex-shrink-0" />
+                  ) : (
+                    <Tag size={14} className="flex-shrink-0" />
+                  )}
+                  {item.cardType === "credit" ? "Credit" : "Debit"}
+                </Badge>
+              </div>
+              
+              {/* Top badges - consistent positioning */}
+              <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
                 {item.rating >= 4.8 && (
                   <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-md flex items-center gap-1 px-3 py-1">
                     <Star size={12} className="fill-white" /> Top Rated
@@ -111,7 +141,7 @@ const CardGrid = ({
                 )}
                 
                 {isExclusive && (
-                  <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md flex items-center gap-1 px-3 py-1 ml-auto">
+                  <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md flex items-center gap-1 px-3 py-1">
                     <Sparkles size={12} /> Exclusive
                   </Badge>
                 )}
@@ -123,19 +153,19 @@ const CardGrid = ({
                 onSelect={onSelectItem}
               />
               
-              {/* Offer badges - consistently positioned at the bottom */}
-              <div className="absolute left-0 right-0 bottom-16 flex flex-col items-center gap-2">
+              {/* Offer badges - consistently positioned */}
+              <div className="absolute left-0 right-0 bottom-20 flex flex-col items-center gap-2 px-4">
                 {bestProductOffer && (
-                  <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-xs font-medium py-1 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center max-w-[90%] mx-auto">
-                    <Award size={12} className="mr-1 flex-shrink-0" /> 
-                    <span className="truncate">{bestProductOffer.product}: {bestProductOffer.cashback} cashback</span>
+                  <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-xs font-medium py-1.5 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center w-full max-w-[90%] mx-auto">
+                    <Award size={12} className="mr-1.5 flex-shrink-0" /> 
+                    <span className="truncate text-center w-full">{bestProductOffer.product}: {bestProductOffer.cashback} cashback</span>
                   </div>
                 )}
                 
                 {bestOffer && (
-                  <div className="bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 text-white text-xs font-medium py-1 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center max-w-[90%] mx-auto">
-                    <Gift size={12} className="mr-1 flex-shrink-0" /> 
-                    <span className="truncate">{bestOffer}</span>
+                  <div className="bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 text-white text-xs font-medium py-1.5 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center w-full max-w-[90%] mx-auto">
+                    <Gift size={12} className="mr-1.5 flex-shrink-0" /> 
+                    <span className="truncate text-center w-full">{bestOffer}</span>
                   </div>
                 )}
               </div>
@@ -146,7 +176,7 @@ const CardGrid = ({
                   <Button 
                     size="sm" 
                     variant="outline" 
-                    className="bg-white/90 hover:bg-gray-100 shadow-sm"
+                    className="bg-white/90 hover:bg-white shadow-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       onViewItem(item.id);
@@ -157,7 +187,7 @@ const CardGrid = ({
                 </div>
               )}
               
-              {/* Selection highlight - improved border with animation */}
+              {/* Selection highlight with improved animation */}
               {selectedIds.includes(item.id) && (
                 <motion.div 
                   className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl"
