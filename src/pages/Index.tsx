@@ -4,10 +4,13 @@ import CardGrid from '@/components/CardGrid';
 import ComparisonBar from '@/components/ComparisonBar';
 import ComparisonView from '@/components/ComparisonView';
 import { useToast } from "@/hooks/use-toast";
-import { Search, CreditCard, Filter, ShoppingBag } from "lucide-react";
+import { Search, CreditCard, Filter, ShoppingBag, X, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { motion } from "framer-motion";
 
 // Define the card type as a union type to match CardItem expectations
@@ -210,11 +213,19 @@ const Index = () => {
   const [showOffersOnly, setShowOffersOnly] = useState(false);
   const [isProductSearch, setIsProductSearch] = useState(false);
   
+  // Search result states
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [viewingCardId, setViewingCardId] = useState<string | null>(null);
+  
   // Filtered cards based on search and filters
   const filteredCards = CARD_DATA.filter(card => {
+    // If search is not active, return all cards
+    if (!isSearchActive && !searchTerm) return true;
+    
+    // If search is active, filter based on search term
     // Product search - check if any product in productOffers matches the search term
     const matchesProductSearch = isProductSearch && 
-      card.productOffers.some(offer => 
+      card.productOffers?.some(offer => 
         offer.product.toLowerCase().includes(searchTerm.toLowerCase())
       );
     
@@ -273,7 +284,41 @@ const Index = () => {
     if (searchTerm) {
       // Re-run search with new type
       setSearchTerm(searchTerm);
+      setIsSearchActive(true);
     }
+  };
+  
+  // Handle search submission
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      setIsSearchActive(true);
+      
+      if (filteredCards.length === 0) {
+        toast({
+          title: "No results found",
+          description: "Try a different search term or adjust your filters.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Search results",
+          description: `Found ${filteredCards.length} cards matching "${searchTerm}".`
+        });
+      }
+    } else {
+      setIsSearchActive(false);
+    }
+  };
+  
+  // Clear search
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setIsSearchActive(false);
+  };
+  
+  // View card details
+  const handleViewCard = (id: string) => {
+    setViewingCardId(id);
   };
   
   // Start comparison mode
@@ -314,6 +359,9 @@ const Index = () => {
   // Get selected card items
   const selectedItems = CARD_DATA.filter(item => selectedIds.includes(item.id));
   
+  // Get viewed card
+  const viewedCard = CARD_DATA.find(card => card.id === viewingCardId);
+  
   // Add animation to body when component mounts
   useEffect(() => {
     document.body.classList.add('animate-fade-in');
@@ -324,10 +372,10 @@ const Index = () => {
 
   // Display product offers for a specific product if searched
   const getProductSearchResults = () => {
-    if (!searchTerm || !isProductSearch) return null;
+    if (!searchTerm || !isProductSearch || !isSearchActive) return null;
     
     const matchingCards = CARD_DATA.filter(card => 
-      card.productOffers.some(offer => 
+      card.productOffers?.some(offer => 
         offer.product.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
@@ -342,7 +390,7 @@ const Index = () => {
         </h3>
         <div className="space-y-4">
           {matchingCards.map(card => {
-            const matchingOffers = card.productOffers.filter(offer => 
+            const matchingOffers = card.productOffers?.filter(offer => 
               offer.product.toLowerCase().includes(searchTerm.toLowerCase())
             );
             
@@ -355,7 +403,7 @@ const Index = () => {
                   <h4 className="font-medium text-gray-900">{card.title}</h4>
                   <p className="text-sm text-gray-500 mb-2">{card.cardType === 'credit' ? 'Credit Card' : 'Debit Card'}</p>
                   <div className="space-y-1">
-                    {matchingOffers.map((offer, idx) => (
+                    {matchingOffers?.map((offer, idx) => (
                       <div key={idx} className="text-sm">
                         <span className="font-medium text-brand-blue">{offer.product}: </span>
                         {offer.cashback && <span className="mr-2">{offer.cashback} cashback</span>}
@@ -365,17 +413,26 @@ const Index = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <button 
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleViewCard(card.id)}
+                    className="text-xs"
+                  >
+                    <Eye size={14} className="mr-1" /> View
+                  </Button>
+                  <Button 
+                    size="sm"
                     onClick={() => handleToggleSelect(card.id)}
-                    className={`px-3 py-1 rounded text-sm transition-colors ${
+                    className={`text-xs ${
                       selectedIds.includes(card.id) 
                         ? 'bg-brand-blue text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     {selectedIds.includes(card.id) ? 'Selected' : 'Select'}
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
@@ -403,18 +460,50 @@ const Index = () => {
           
           {/* Search and Filter Section */}
           <div className="w-full">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder={isProductSearch ? "Search for products (e.g., iPhone, MacBook)..." : "Search for cards, features, or benefits..."}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-10 py-2 w-full rounded-lg border border-gray-200 focus:border-brand-blue transition-all"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <div className="relative flex items-center gap-2">
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder={isProductSearch ? "Search for products (e.g., iPhone, MacBook)..." : "Search for cards, features, or benefits..."}
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    // Show real-time results if user has already activated search
+                    if (isSearchActive && e.target.value === '') {
+                      setIsSearchActive(false);
+                    } else if (isSearchActive) {
+                      // Maintain search active state for real-time results
+                      setIsSearchActive(true);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  className="pl-10 pr-10 py-2 w-full rounded-lg border border-gray-200 focus:border-brand-blue transition-all"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                {searchTerm && (
+                  <button 
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              
+              <Button 
+                onClick={handleSearch}
+                className="bg-brand-blue hover:bg-brand-blue/90 text-white"
+              >
+                <Search size={16} className="mr-1" /> Search
+              </Button>
+              
               <button 
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-brand-blue transition-colors"
+                className="h-10 w-10 flex items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50"
               >
                 <Filter size={18} />
               </button>
@@ -440,7 +529,9 @@ const Index = () => {
                 </button>
               </div>
               <div className="text-xs text-gray-500">
-                Showing {filteredCards.length} of {CARD_DATA.length} cards
+                {isSearchActive 
+                  ? `Showing ${filteredCards.length} of ${CARD_DATA.length} cards`
+                  : searchTerm ? "Enter search to see results" : `Showing all ${CARD_DATA.length} cards`}
               </div>
             </div>
             
@@ -493,7 +584,9 @@ const Index = () => {
                   
                   <div className="flex justify-between items-center pt-2">
                     <div className="text-xs text-gray-500">
-                      Showing {filteredCards.length} of {CARD_DATA.length} cards
+                      {isSearchActive 
+                        ? `Showing ${filteredCards.length} of ${CARD_DATA.length} cards`
+                        : `Showing all ${CARD_DATA.length} cards`}
                     </div>
                     <button 
                       onClick={() => {
@@ -501,6 +594,7 @@ const Index = () => {
                         setCardTypeFilter({credit: true, debit: true});
                         setShowOffersOnly(false);
                         setIsProductSearch(false);
+                        setIsSearchActive(false);
                       }}
                       className="text-xs text-brand-blue hover:underline"
                     >
@@ -515,10 +609,26 @@ const Index = () => {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8 pb-32 min-h-[calc(100vh-160px)]">
-        <div className="mb-8 animate-fly-in">
-          <h2 className="text-3xl font-bold tracking-tight mb-3">Find Your Perfect Card</h2>
-          <p className="text-gray-600">Select multiple cards to compare features side by side.</p>
-        </div>
+        {isSearchActive ? (
+          <div className="mb-8 animate-fly-in">
+            <div className="flex justify-between items-center">
+              <h2 className="text-3xl font-bold tracking-tight mb-3">
+                Search Results for "{searchTerm}"
+              </h2>
+              <Button variant="outline" onClick={handleClearSearch}>
+                <X size={14} className="mr-1" /> Clear Search
+              </Button>
+            </div>
+            <p className="text-gray-600">
+              Found {filteredCards.length} {filteredCards.length === 1 ? 'card' : 'cards'} matching your search.
+            </p>
+          </div>
+        ) : (
+          <div className="mb-8 animate-fly-in">
+            <h2 className="text-3xl font-bold tracking-tight mb-3">Find Your Perfect Card</h2>
+            <p className="text-gray-600">Select multiple cards to compare features side by side.</p>
+          </div>
+        )}
         
         {/* Product search results */}
         {getProductSearchResults()}
@@ -528,6 +638,7 @@ const Index = () => {
             items={filteredCards}
             selectedIds={selectedIds}
             onSelectItem={handleToggleSelect}
+            onViewItem={handleViewCard}
           />
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -562,6 +673,132 @@ const Index = () => {
           onAddMore={handleCloseComparison}
         />
       )}
+      
+      {/* Card Details Dialog */}
+      <Dialog open={!!viewingCardId} onOpenChange={(open) => !open && setViewingCardId(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          {viewedCard && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl flex items-center">
+                  <div className="w-10 h-10 rounded-md overflow-hidden mr-3">
+                    <img 
+                      src={viewedCard.image} 
+                      alt={viewedCard.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  {viewedCard.title}
+                </DialogTitle>
+                <DialogDescription>
+                  <div className="flex items-center mt-2 space-x-3">
+                    <span className="bg-brand-light-blue text-brand-blue text-xs px-2 py-1 rounded-full">
+                      {viewedCard.cardType === 'credit' ? 'Credit Card' : 'Debit Card'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      Annual fee: {viewedCard.price}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      Rating: {viewedCard.rating}/5
+                    </span>
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <img 
+                    src={viewedCard.image} 
+                    alt={viewedCard.title} 
+                    className="w-full h-64 object-cover rounded-lg shadow-md"
+                  />
+                  
+                  <div className="flex justify-between mt-4">
+                    <Button 
+                      onClick={() => {
+                        handleToggleSelect(viewedCard.id);
+                        // If this is the first card selected, show a helpful toast
+                        if (!selectedIds.includes(viewedCard.id) && selectedIds.length === 0) {
+                          toast({
+                            title: "Card selected for comparison",
+                            description: "Select more cards to compare them side by side."
+                          });
+                        }
+                      }}
+                      className={selectedIds.includes(viewedCard.id) ? "bg-brand-blue" : ""}
+                    >
+                      {selectedIds.includes(viewedCard.id) ? 'Selected for Comparison' : 'Add to Comparison'}
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Features</h3>
+                    <ul className="space-y-2">
+                      {viewedCard.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <div className="h-5 w-5 rounded-full bg-brand-light-blue flex items-center justify-center mr-2 mt-0.5">
+                            <span className="text-brand-blue text-xs font-bold">✓</span>
+                          </div>
+                          <span className="text-gray-700">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Special Offers</h3>
+                    {viewedCard.offers && viewedCard.offers.length > 0 ? (
+                      <ul className="space-y-2">
+                        {viewedCard.offers.map((offer, idx) => (
+                          <li key={idx} className="bg-gray-50 px-3 py-2 rounded-md text-gray-700">
+                            {offer}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-500">No special offers available for this card.</p>
+                    )}
+                  </div>
+                  
+                  {viewedCard.productOffers && viewedCard.productOffers.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Product Offers</h3>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product</TableHead>
+                            <TableHead>Cashback</TableHead>
+                            <TableHead>Installments</TableHead>
+                            <TableHead>Exclusive</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {viewedCard.productOffers.map((offer, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell className="font-medium">{offer.product}</TableCell>
+                              <TableCell>{offer.cashback}</TableCell>
+                              <TableCell>{offer.installments}</TableCell>
+                              <TableCell>
+                                {offer.exclusive ? (
+                                  <span className="text-xs bg-brand-light-blue text-brand-blue px-1 py-0.5 rounded">
+                                    Exclusive
+                                  </span>
+                                ) : 'No'}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

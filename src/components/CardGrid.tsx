@@ -3,6 +3,8 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import Card, { CardProps } from './Card';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Eye } from 'lucide-react';
+import { Button } from './ui/button';
 
 export type CardType = "credit" | "debit";
 
@@ -20,6 +22,7 @@ interface CardGridProps {
   items: CardItem[];
   selectedIds: string[];
   onSelectItem: (id: string) => void;
+  onViewItem?: (id: string) => void;
   className?: string;
 }
 
@@ -27,6 +30,7 @@ const CardGrid = ({
   items,
   selectedIds,
   onSelectItem,
+  onViewItem,
   className
 }: CardGridProps) => {
   // Enhanced card animation variants for Framer Motion
@@ -79,6 +83,23 @@ const CardGrid = ({
               isSelected={selectedIds.includes(item.id)}
               onSelect={onSelectItem}
             />
+            
+            {/* View button overlay */}
+            {onViewItem && (
+              <div className="absolute right-4 bottom-4 z-10">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-white hover:bg-gray-100 shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewItem(item.id);
+                  }}
+                >
+                  <Eye size={16} className="mr-1" /> View
+                </Button>
+              </div>
+            )}
             
             {/* Simple highlight for selected cards */}
             {selectedIds.includes(item.id) && (
