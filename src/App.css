@@ -42,24 +42,25 @@
   color: #888;
 }
 
-/* Enhanced UI Effects */
-.glassmorphism-card {
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  background: rgba(255, 255, 255, 0.8);
+/* Enhanced UI Effects - Simplified */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.07),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
-.neo-morphism {
-  border-radius: 16px;
-  background: linear-gradient(145deg, #f0f0f0, #ffffff);
-  box-shadow: 
-    10px 10px 20px #d1d1d1,
-    -10px -10px 20px #ffffff;
+.card-shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.card-shadow:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card-selected {
+  box-shadow: 0 0 0 2px #0070F3, 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .gradient-border {
@@ -106,53 +107,11 @@
   display: inline-block;
 }
 
-.floating {
-  animation: floating 3s ease-in-out infinite;
-}
-
-@keyframes floating {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.card-glow {
-  position: relative;
-}
-
-.card-glow::after {
-  content: '';
-  position: absolute;
-  top: -15px;
-  left: -15px;
-  right: -15px;
-  bottom: -15px;
-  z-index: -1;
-  background: radial-gradient(
-    circle at center,
-    rgba(54, 178, 189, 0.15),
-    rgba(0, 112, 243, 0.05) 60%,
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.card-glow:hover::after {
-  opacity: 1;
-}
-
 /* Enhanced Animations */
 @keyframes slide-up-fade {
   0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   100% {
     opacity: 1;
@@ -161,31 +120,7 @@
 }
 
 .slide-up-animation {
-  animation: slide-up-fade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Enhance card particle animations */
-@keyframes particle-orbit {
-  0% {
-    transform: translateX(0) translateY(0) scale(0.5);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  80% {
-    opacity: 1;
-    transform: scale(0.8);
-  }
-  100% {
-    transform: translateX(calc(120px * cos(360deg))) translateY(calc(120px * sin(360deg))) scale(0.3);
-    opacity: 0;
-  }
-}
-
-.animate-particle {
-  animation: particle-orbit 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: slide-up-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Background pattern */
@@ -199,7 +134,6 @@
 /* Custom button styles */
 .premium-button {
   position: relative;
-  overflow: hidden;
   transition: all 0.3s ease;
   z-index: 1;
 }
@@ -226,3 +160,31 @@
   transform: translateY(-2px);
   box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
 }
+
+/* Animation for the neo-button in comparison bar */
+.neo-button {
+  background: linear-gradient(45deg, #0070F3, #2CC4BC);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.neo-button:hover {
+  background: linear-gradient(45deg, #0058c7, #229e98);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.neo-blur {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.stagger-animation > * {
+  animation: slide-up-fade 0.4s forwards;
+}
+
+.stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
