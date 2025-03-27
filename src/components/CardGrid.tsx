@@ -40,21 +40,21 @@ const CardGrid = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.12
+        staggerChildren: 0.08 // Slightly faster staggering for smoother appearance
       }
     }
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.9 },
+    hidden: { opacity: 0, y: 20, scale: 0.97 }, // Less extreme initial values
     visible: { 
       opacity: 1, 
       y: 0, 
       scale: 1,
       transition: { 
         type: "spring", 
-        stiffness: 80, 
-        damping: 12 
+        stiffness: 70, // Lower stiffness for more subtle animation
+        damping: 15   // Higher damping for less bounce
       }
     }
   };
@@ -62,9 +62,6 @@ const CardGrid = ({
   // Function to highlight the best offer from a card
   const getBestOffer = (item: CardItem) => {
     if (!item.offers || item.offers.length === 0) return null;
-    
-    // For simplicity, we'll consider the first offer as the best one
-    // In a real app, you might want to implement some ranking logic
     return item.offers[0];
   };
 
@@ -72,7 +69,6 @@ const CardGrid = ({
   const getBestProductOffer = (item: CardItem) => {
     if (!item.productOffers || item.productOffers.length === 0) return null;
     
-    // Find the offer with highest cashback percentage
     return item.productOffers.reduce((best, current) => {
       const currentCashback = parseFloat(current.cashback.replace('%', '')) || 0;
       const bestCashback = parseFloat(best.cashback.replace('%', '')) || 0;
@@ -84,7 +80,7 @@ const CardGrid = ({
   return (
     <motion.div 
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8",
+        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6", // Reduced gap for more consistent spacing
         className
       )}
       variants={containerVariants}
@@ -104,24 +100,22 @@ const CardGrid = ({
               className="card-container relative"
               variants={cardVariants}
               layout
-              whileHover={{ scale: 1.02, zIndex: 5 }}
+              whileHover={{ scale: 1.01, zIndex: 5 }} // Subtler hover effect
             >
-              {/* Highlighting badges for special cards */}
-              {item.rating >= 4.8 && (
-                <div className="absolute -top-3 -left-3 z-10">
+              {/* Card badges - positioned consistently */}
+              <div className="absolute -top-2 left-0 right-0 flex justify-between px-3 z-10">
+                {item.rating >= 4.8 && (
                   <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-md flex items-center gap-1 px-3 py-1">
                     <Star size={12} className="fill-white" /> Top Rated
                   </Badge>
-                </div>
-              )}
-              
-              {isExclusive && (
-                <div className="absolute -top-3 right-5 z-10">
-                  <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md flex items-center gap-1 px-3 py-1">
-                    <Sparkles size={12} /> Exclusive Offers
+                )}
+                
+                {isExclusive && (
+                  <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md flex items-center gap-1 px-3 py-1 ml-auto">
+                    <Sparkles size={12} /> Exclusive
                   </Badge>
-                </div>
-              )}
+                )}
+              </div>
               
               <Card
                 {...item}
@@ -129,13 +123,30 @@ const CardGrid = ({
                 onSelect={onSelectItem}
               />
               
-              {/* View button overlay */}
+              {/* Offer badges - consistently positioned at the bottom */}
+              <div className="absolute left-0 right-0 bottom-16 flex flex-col items-center gap-2">
+                {bestProductOffer && (
+                  <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-xs font-medium py-1 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center max-w-[90%] mx-auto">
+                    <Award size={12} className="mr-1 flex-shrink-0" /> 
+                    <span className="truncate">{bestProductOffer.product}: {bestProductOffer.cashback} cashback</span>
+                  </div>
+                )}
+                
+                {bestOffer && (
+                  <div className="bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 text-white text-xs font-medium py-1 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center max-w-[90%] mx-auto">
+                    <Gift size={12} className="mr-1 flex-shrink-0" /> 
+                    <span className="truncate">{bestOffer}</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* View button - consistently positioned */}
               {onViewItem && (
-                <div className="absolute right-4 bottom-4 z-10">
+                <div className="absolute right-3 bottom-3 z-10">
                   <Button 
                     size="sm" 
                     variant="outline" 
-                    className="bg-white hover:bg-gray-100 shadow-sm"
+                    className="bg-white/90 hover:bg-gray-100 shadow-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       onViewItem(item.id);
@@ -146,29 +157,17 @@ const CardGrid = ({
                 </div>
               )}
               
-              {/* Special offers highlight */}
-              {bestOffer && (
-                <div className="absolute left-0 right-0 bottom-16 flex justify-center">
-                  <div className="bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 text-white text-xs font-medium py-1 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center">
-                    <Gift size={12} className="mr-1" /> {bestOffer}
-                  </div>
-                </div>
-              )}
-              
-              {/* Product offer highlight */}
-              {bestProductOffer && (
-                <div className="absolute left-0 right-0 bottom-24 flex justify-center">
-                  <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-xs font-medium py-1 px-3 rounded-full backdrop-blur-sm shadow-md flex items-center">
-                    <Award size={12} className="mr-1" /> {bestProductOffer.product}: {bestProductOffer.cashback} cashback
-                  </div>
-                </div>
-              )}
-              
-              {/* Simple highlight for selected cards */}
+              {/* Selection highlight - improved border with animation */}
               {selectedIds.includes(item.id) && (
-                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+                <motion.div 
+                  className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <div className="border-2 border-brand-teal rounded-xl absolute inset-0"></div>
-                </div>
+                </motion.div>
               )}
             </motion.div>
           );
